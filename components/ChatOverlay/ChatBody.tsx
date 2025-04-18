@@ -12,9 +12,10 @@ export type Message = {
 
 type ChatBodyProps = {
   messages: Message[];
+  isTyping: boolean;
 };
 
-const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
+const ChatBody: React.FC<ChatBodyProps> = ({ messages, isTyping }) => {
   const renderMessage = ({ item }: { item: Message }) => (
     <View
       style={[
@@ -34,14 +35,21 @@ const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
   );
 
   return (
-    <FlatList
-      data={messages}
-      keyExtractor={(item) => item.id}
-      renderItem={renderMessage}
-      contentContainerStyle={{ padding: 16 }}
-      style={{ flex: 1 }}
-      inverted
-    />
+    <>
+      <FlatList
+        data={messages}
+        keyExtractor={(item) => item.id}
+        renderItem={renderMessage}
+        contentContainerStyle={{ padding: 16 }}
+        style={{ flex: 1 }}
+        inverted
+      />
+      {isTyping && (
+        <Text style={{ marginStart: 16, marginBottom: 16, color: "#000" }}>
+          Typing...
+        </Text>
+      )}
+    </>
   );
 };
 

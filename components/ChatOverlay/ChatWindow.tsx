@@ -20,6 +20,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity }) => {
   const { minimize } = useChatOverlay();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
 
   const insets = useSafeAreaInsets();
 
@@ -32,16 +33,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity }) => {
   const sendMessage = () => {
     if (!message.trim()) return;
 
-    const newMsg: Message = {
+    const userMsg: Message = {
       id: Date.now().toString(),
       text: message.trim(),
       sender: "user",
       timestamp: Date.now(),
     };
 
-    setMessages((prev) => [newMsg, ...prev]);
+    setMessages((prev) => [userMsg, ...prev]);
     setMessage("");
 
+    // Show typing indicator
+    setIsTyping(true);
+
+    // Fake bot reply after delay
     setTimeout(() => {
       const reply: Message = {
         id: Date.now().toString() + "-bot",
@@ -49,8 +54,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity }) => {
         sender: "bot",
         timestamp: Date.now(),
       };
+
       setMessages((prev) => [reply, ...prev]);
-    }, 1000);
+      setIsTyping(false);
+    }, 1500);
   };
 
   return (
@@ -59,7 +66,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity }) => {
     >
       <View style={{ flex: 1 }}>
         <ChatHeader onMinimize={minimize} />
-        <ChatBody messages={messages} />
+        <ChatBody messages={messages} isTyping={isTyping} />
         <ChatInput
           message={message}
           onChangeMessage={setMessage}
