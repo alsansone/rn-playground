@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -8,17 +8,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  withTiming,
+  withDelay,
 } from "react-native-reanimated";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { useChatOverlay } from "./ChatOverlayProvider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useKeyboardHeight } from "./useKeyboardHeight";
 
 const { width, height } = Dimensions.get("window");
 
@@ -32,9 +33,12 @@ const ChatOverlay: React.FC = () => {
 
   const insets = useSafeAreaInsets();
 
-  // Shared values for the bubble position (when minimized)
+  const bubbleWidth = useSharedValue(60);
+  const bubbleHeight = useSharedValue(60);
+  const bubbleRadius = useSharedValue(30);
   const translateX = useSharedValue(width - 80);
   const translateY = useSharedValue(height - 160);
+  const contentOpacity = useSharedValue(0); // Chat content fade-in
 
   const startX = useSharedValue(20);
   const startY = useSharedValue(height - 120);
@@ -51,94 +55,124 @@ const ChatOverlay: React.FC = () => {
       startY.value = translateY.value;
     });
 
-  const bubbleStyle = useAnimatedStyle(() => ({
+  const [message, setMessage] = React.useState("");
+
+  useEffect(() => {
+    if (isExpanded) {
+      // Animate to full-screen
+      bubbleWidth.value = withTiming(width, { duration: 300 });
+      bubbleHeight.value = withTiming(height, { duration: 300 });
+      bubbleRadius.value = withTiming(0, { duration: 300 });
+      translateX.value = withTiming(0, { duration: 300 });
+      translateY.value = withTiming(0, { duration: 300 });
+
+      contentOpacity.value = withDelay(300, withTiming(1, { duration: 200 }));
+    } else {
+      // Animate back to bubble
+      contentOpacity.value = withTiming(0, { duration: 100 });
+      bubbleWidth.value = withTiming(60, { duration: 300 });
+      bubbleHeight.value = withTiming(60, { duration: 300 });
+      bubbleRadius.value = withTiming(30, { duration: 300 });
+      translateX.value = withTiming(width - 80, { duration: 300 });
+      translateY.value = withTiming(height - 160, { duration: 300 });
+    }
+  }, [isExpanded]);
+
+  const keyboardHeight = useKeyboardHeight();
+
+  const morphStyle = useAnimatedStyle(() => ({
+    width: bubbleWidth.value,
+    height: bubbleHeight.value,
+    borderRadius: bubbleRadius.value,
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },
     ],
   }));
 
-  const [message, setMessage] = React.useState("");
+  const contentStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+  }));
 
-  if (isExpanded) {
-    return (
-      <Animated.View
-        style={[
-          StyleSheet.absoluteFillObject,
-          styles.expandedContainer,
-          { paddingTop: insets.top },
-        ]}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
-            <View style={styles.header}>
-              <Text style={styles.headerTitle}>Chat</Text>
-              <TouchableOpacity onPress={minimize}>
-                <Text style={styles.minimizeText}>Minimize</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.chatBody}>
-              <Text>Messages go here</Text>
-            </View>
-
-            <View
-              style={[styles.chatInput, { paddingBottom: insets.bottom || 16 }]}
-            >
-              <TextInput
-                style={styles.inputField}
-                value={message}
-                onChangeText={setMessage}
-                placeholder="Type a message..."
-                placeholderTextColor="#aaa"
-                multiline
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  if (message.trim()) {
-                    console.log("Send:", message);
-                    setMessage("");
-                  }
-                }}
-              >
-                <Ionicons name="send" size={24} color="#007AFF" />
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
-      </Animated.View>
-    );
-  }
-
-  // Minimized floating chat bubble
   return (
-    <GestureDetector gesture={panGesture}>
-      <Animated.View style={[styles.bubble, bubbleStyle]}>
-        <TouchableOpacity onPress={expand} style={styles.bubbleTouch}>
-          <Text style={styles.bubbleText}>Chat</Text>
-        </TouchableOpacity>
+    <GestureDetector gesture={isExpanded ? Gesture.Pan() : panGesture}>
+      <Animated.View style={[styles.morphContainer, morphStyle]}>
+        {isExpanded ? (
+          <Animated.View
+            style={[
+              styles.chatContent,
+              contentStyle,
+              { paddingTop: insets.top },
+            ]}
+          >
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
+              <View style={[styles.header]}>
+                <Text style={styles.headerTitle}>Chat</Text>
+                <TouchableOpacity onPress={minimize}>
+                  <Text style={styles.minimizeText}>Minimize</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.chatBody}>
+                <Text>Messages go here</Text>
+              </View>
+
+              <View
+                style={[
+                  styles.chatInput,
+                  {
+                    paddingBottom: insets.bottom || 16,
+                    marginBottom: keyboardHeight,
+                  },
+                ]}
+              >
+                <TextInput
+                  style={styles.inputField}
+                  value={message}
+                  onChangeText={setMessage}
+                  placeholder="Type a message..."
+                  placeholderTextColor="#aaa"
+                  multiline
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    if (message.trim()) {
+                      console.log("Send:", message);
+                      setMessage("");
+                    }
+                  }}
+                >
+                  <Ionicons name="send" size={24} color="#007AFF" />
+                </TouchableOpacity>
+              </View>
+            </KeyboardAvoidingView>
+          </Animated.View>
+        ) : (
+          <TouchableOpacity onPress={expand} style={styles.bubbleTouch}>
+            <Text style={styles.bubbleText}>Chat</Text>
+          </TouchableOpacity>
+        )}
       </Animated.View>
     </GestureDetector>
   );
 };
 
 const styles = StyleSheet.create({
-  // Floating bubble
-  bubble: {
+  morphContainer: {
     position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#007AFF",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#fff",
     zIndex: 999,
-    elevation: 10,
+    overflow: "hidden",
+    elevation: 12,
+  },
+  chatContent: {
+    flex: 1,
   },
   bubbleTouch: {
+    backgroundColor: "#007AFF",
     width: "100%",
     height: "100%",
     justifyContent: "center",
@@ -147,14 +181,6 @@ const styles = StyleSheet.create({
   bubbleText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-
-  // Full-screen expanded chat
-  expandedContainer: {
-    flex: 1,
-    backgroundColor: "#fff",
-    overflow: "hidden",
-    zIndex: 999,
   },
   header: {
     height: 60,
@@ -170,6 +196,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  // Floating bubble
+  bubble: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#007AFF",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 999,
+    elevation: 10,
+  },
+
+  // Full-screen expanded chat
+  expandedContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    overflow: "hidden",
+    zIndex: 999,
+  },
   minimizeText: {
     color: "#007AFF",
     fontWeight: "600",
@@ -184,11 +230,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTopWidth: 1,
     borderColor: "#ddd",
-    backgroundColor: "red",
+    backgroundColor: "#f7f7f7",
   },
   inputField: {
     flex: 1,
-    maxHeight: 60,
     fontSize: 16,
     paddingVertical: 8,
     paddingRight: 8,
