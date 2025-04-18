@@ -62,7 +62,7 @@ const ChatOverlay: React.FC = () => {
     <GestureDetector gesture={isExpanded ? Gesture.Pan() : panGesture}>
       <Animated.View style={[styles.morphContainer, morphStyle]}>
         {isExpanded ? (
-          <ChatWindow contentOpacity={contentOpacity} onPress={minimize} />
+          <ChatWindow contentOpacity={contentOpacity} />
         ) : (
           <ChatBubble onPress={expand} />
         )}

@@ -5,8 +5,16 @@ export default StyleSheet.create({
     position: "absolute",
     backgroundColor: "#fff",
     zIndex: 999,
-    overflow: "hidden",
+    // Android
     elevation: 12,
+    // iOS shadow
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   chatContent: {
     flex: 1,
@@ -17,6 +25,7 @@ export default StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 30,
   },
   bubbleText: {
     color: "#fff",
@@ -36,33 +45,9 @@ export default StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  // Floating bubble
-  bubble: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#007AFF",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 999,
-    elevation: 10,
-  },
-
-  // Full-screen expanded chat
-  expandedContainer: {
-    flex: 1,
-    backgroundColor: "#fff",
-    overflow: "hidden",
-    zIndex: 999,
-  },
   minimizeText: {
     color: "#007AFF",
     fontWeight: "600",
-  },
-  chatBody: {
-    flex: 1,
-    padding: 16,
   },
   chatInput: {
     flexDirection: "row",
@@ -79,5 +64,22 @@ export default StyleSheet.create({
     paddingRight: 8,
     color: "#000",
     textAlignVertical: "top",
+  },
+  messageBubble: {
+    padding: 10,
+    borderRadius: 16,
+    marginVertical: 4,
+    maxWidth: "75%",
+  },
+  userBubble: {
+    backgroundColor: "#007AFF",
+    alignSelf: "flex-end",
+  },
+  botBubble: {
+    backgroundColor: "#e5e5ea",
+    alignSelf: "flex-start",
+  },
+  messageText: {
+    color: "#fff",
   },
 });
