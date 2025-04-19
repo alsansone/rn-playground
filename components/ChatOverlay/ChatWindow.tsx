@@ -10,14 +10,13 @@ import useKeyboardHeight from "./useKeyboardHeight";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import ChatBody, { Message } from "./ChatBody";
-import { useChatOverlay } from "./ChatOverlayProvider";
 
 type ChatWindowProps = {
   contentOpacity: SharedValue<number>;
+  onPress: () => void;
 };
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity }) => {
-  const { minimize } = useChatOverlay();
+const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity, onPress }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -65,7 +64,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity }) => {
       style={[styles.chatContent, contentStyle, { paddingTop: insets.top }]}
     >
       <View style={{ flex: 1 }}>
-        <ChatHeader onMinimize={minimize} />
+        <ChatHeader onMinimize={onPress} />
         <ChatBody messages={messages} isTyping={isTyping} />
         <ChatInput
           message={message}

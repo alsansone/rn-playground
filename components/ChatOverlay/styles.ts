@@ -5,16 +5,6 @@ export default StyleSheet.create({
     position: "absolute",
     backgroundColor: "#fff",
     zIndex: 999,
-    // Android
-    elevation: 12,
-    // iOS shadow
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
   },
   chatContent: {
     flex: 1,
@@ -81,5 +71,46 @@ export default StyleSheet.create({
   },
   messageText: {
     color: "#fff",
+  },
+  chatMiniContainer: {
+    width: 110,
+    height: 160,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 10,
+  },
+  chatMiniTop: {
+    backgroundColor: "#fff",
+    padding: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  chatMiniDivider: {
+    height: 1,
+    width: "100%",
+    backgroundColor: "#e0e0e0",
+  },
+  chatMiniBottom: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 16,
+    paddingHorizontal: 4,
+  },
+  chatMiniIcon: {
+    marginBottom: 6,
+  },
+  chatMiniTextWrap: {
+    paddingBottom: 4,
+  },
+  chatMiniText: {
+    fontSize: 12,
+    textAlign: "center",
+    color: "#333",
   },
 });

@@ -20,7 +20,8 @@ const clamp = (value: number, min: number, max: number) => {
 };
 
 const ChatOverlay: React.FC = () => {
-  const { isExpanded, expand, minimize } = useChatOverlay();
+  const { isExpanded, toggleSize, visible, toggleVisibility } =
+    useChatOverlay();
 
   const insets = useSafeAreaInsets();
 
@@ -40,8 +41,8 @@ const ChatOverlay: React.FC = () => {
     .onUpdate((event) => {
       const nextX = event.translationX + startX.value;
       const nextY = event.translationY + startY.value;
-      translateX.value = clamp(nextX, 10, width - 70); // horizontal clamp
-      translateY.value = clamp(nextY, insets.top + 10, height - 100); // vertical clamp, respect status bar
+      translateX.value = clamp(nextX, 10, width - 120); // horizontal clamp
+      translateY.value = clamp(nextY, insets.top + 10, height - 200); // vertical clamp, respect status bar
     })
     .onEnd(() => {
       startX.value = translateX.value;
@@ -58,13 +59,21 @@ const ChatOverlay: React.FC = () => {
     ],
   }));
 
+  if (!visible) {
+    return null;
+  }
+
   return (
     <GestureDetector gesture={isExpanded ? Gesture.Pan() : panGesture}>
       <Animated.View style={[styles.morphContainer, morphStyle]}>
         {isExpanded ? (
-          <ChatWindow contentOpacity={contentOpacity} />
+          <ChatWindow contentOpacity={contentOpacity} onPress={toggleSize} />
         ) : (
-          <ChatBubble onPress={expand} />
+          <ChatBubble
+            onPress={toggleSize}
+            onClose={toggleVisibility}
+            statusText="Connecting to chat…"
+          />
         )}
       </Animated.View>
     </GestureDetector>
