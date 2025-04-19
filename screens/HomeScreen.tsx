@@ -6,7 +6,7 @@ import { useChatOverlay } from "../components/ChatOverlay";
 const HomeScreen = () => {
   const navigation = useNavigation();
 
-  const { toggleVisibility } = useChatOverlay();
+  const { showOverlay } = useChatOverlay();
 
   return (
     <View style={styles.container}>
@@ -14,7 +14,7 @@ const HomeScreen = () => {
         title="Go to Settings"
         onPress={() => navigation.navigate("Settings" as never)}
       />
-      <Button title="Toggle Chat" onPress={toggleVisibility} />
+      <Button title="Start Chat" onPress={showOverlay} />
     </View>
   );
 };

@@ -3,7 +3,8 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 type ChatOverlayContextType = {
   isExpanded: boolean;
   visible: boolean;
-  toggleVisibility: () => void;
+  showOverlay: () => void;
+  hideOverlay: () => void;
   toggleSize: () => void;
 };
 
@@ -26,16 +27,29 @@ type ChatOverlayProviderProps = {
 const ChatOverlayProvider: React.FC<ChatOverlayProviderProps> = ({
   children,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [visible, setVisible] = useState(false);
 
-  const toggleVisibility = () => setVisible((prev) => !prev);
+  const showOverlay = () => {
+    setVisible(true);
+  };
+
+  const hideOverlay = () => {
+    setVisible(false);
+    setIsExpanded(true);
+  };
 
   const toggleSize = () => setIsExpanded((prev) => !prev);
 
   return (
     <ChatOverlayContext.Provider
-      value={{ isExpanded, visible, toggleVisibility, toggleSize }}
+      value={{
+        isExpanded,
+        visible,
+        showOverlay,
+        hideOverlay,
+        toggleSize,
+      }}
     >
       {children}
     </ChatOverlayContext.Provider>

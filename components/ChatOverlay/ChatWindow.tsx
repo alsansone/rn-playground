@@ -14,9 +14,14 @@ import ChatBody, { Message } from "./ChatBody";
 type ChatWindowProps = {
   contentOpacity: SharedValue<number>;
   onPress: () => void;
+  onClose: () => void;
 };
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity, onPress }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({
+  contentOpacity,
+  onPress,
+  onClose,
+}) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -64,7 +69,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contentOpacity, onPress }) => {
       style={[styles.chatContent, contentStyle, { paddingTop: insets.top }]}
     >
       <View style={{ flex: 1 }}>
-        <ChatHeader onMinimize={onPress} />
+        <ChatHeader onMinimize={onPress} onClose={onClose} />
         <ChatBody messages={messages} isTyping={isTyping} />
         <ChatInput
           message={message}

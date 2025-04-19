@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TextInput, TouchableOpacity, Platform } from "react-native";
+import { View, TextInput, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "./styles";
@@ -37,8 +37,19 @@ const ChatInput: React.FC<ChatInputProps> = ({
         placeholderTextColor="#aaa"
         multiline
       />
-      <TouchableOpacity onPress={onSend}>
-        <Ionicons name="send" size={24} color="#007AFF" />
+      <TouchableOpacity
+        onPress={onSend}
+        disabled={message.trim().length === 0}
+        style={[
+          styles.sendButton,
+          message.trim().length === 0 && styles.sendButtonDisabled,
+        ]}
+      >
+        <Ionicons
+          name="send"
+          size={24}
+          color={message.trim().length === 0 ? "#ccc" : "#007AFF"}
+        />
       </TouchableOpacity>
     </View>
   );

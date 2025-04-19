@@ -21,19 +21,26 @@ export default StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  header: {
+  chatHeaderContainer: {
     height: 60,
-    backgroundColor: "#f7f7f7",
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderColor: "#ddd",
-    paddingHorizontal: 16,
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 12,
+  },
+  chatHeaderIcon: {
+    width: 32,
     alignItems: "center",
   },
-  headerTitle: {
+  chatHeaderTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
+    textAlign: "left",
+    marginStart: 16,
+    flex: 1,
   },
   minimizeText: {
     color: "#007AFF",
@@ -112,5 +119,11 @@ export default StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
     color: "#333",
+  },
+  sendButton: {
+    padding: 8,
+  },
+  sendButtonDisabled: {
+    opacity: 0.5,
   },
 });

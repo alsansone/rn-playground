@@ -20,8 +20,7 @@ const clamp = (value: number, min: number, max: number) => {
 };
 
 const ChatOverlay: React.FC = () => {
-  const { isExpanded, toggleSize, visible, toggleVisibility } =
-    useChatOverlay();
+  const { isExpanded, toggleSize, visible, hideOverlay } = useChatOverlay();
 
   const insets = useSafeAreaInsets();
 
@@ -67,11 +66,15 @@ const ChatOverlay: React.FC = () => {
     <GestureDetector gesture={isExpanded ? Gesture.Pan() : panGesture}>
       <Animated.View style={[styles.morphContainer, morphStyle]}>
         {isExpanded ? (
-          <ChatWindow contentOpacity={contentOpacity} onPress={toggleSize} />
+          <ChatWindow
+            contentOpacity={contentOpacity}
+            onPress={toggleSize}
+            onClose={hideOverlay}
+          />
         ) : (
           <ChatBubble
             onPress={toggleSize}
-            onClose={toggleVisibility}
+            onClose={hideOverlay}
             statusText="Connecting to chat…"
           />
         )}
