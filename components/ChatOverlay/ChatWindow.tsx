@@ -30,10 +30,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const keyboardHeight = useKeyboardHeight();
 
-  const contentStyle = useAnimatedStyle(() => ({
-    opacity: contentOpacity.value,
-  }));
-
   const sendMessage = () => {
     if (!message.trim()) return;
 
@@ -65,9 +61,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   return (
-    <Animated.View
-      style={[styles.chatContent, contentStyle, { paddingTop: insets.top }]}
-    >
+    <Animated.View style={[styles.chatContent, { paddingTop: insets.top }]}>
       <View style={{ flex: 1 }}>
         <ChatHeader onMinimize={onPress} onClose={onClose} />
         <ChatBody messages={messages} isTyping={isTyping} />

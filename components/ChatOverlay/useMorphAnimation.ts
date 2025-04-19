@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Dimensions } from "react-native";
-import { useSharedValue, withTiming, withDelay } from "react-native-reanimated";
+import { useSharedValue, withTiming } from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
 
@@ -16,7 +16,6 @@ export const useMorphAnimation = (isExpanded: boolean) => {
   const bubbleRadius = useSharedValue(BUBBLE_RADIUS);
   const translateX = useSharedValue(width - WIDTH_OFFSET);
   const translateY = useSharedValue(height - HEIGHT_OFFSET);
-  const contentOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (isExpanded) {
@@ -25,12 +24,7 @@ export const useMorphAnimation = (isExpanded: boolean) => {
       bubbleRadius.value = withTiming(0, { duration: ANIMATION_DURATION });
       translateX.value = withTiming(0, { duration: ANIMATION_DURATION });
       translateY.value = withTiming(0, { duration: ANIMATION_DURATION });
-      contentOpacity.value = withDelay(
-        ANIMATION_DURATION,
-        withTiming(1, { duration: 200 })
-      );
     } else {
-      contentOpacity.value = withTiming(0, { duration: 100 });
       bubbleWidth.value = withTiming(BUBBLE_SIZE, {
         duration: ANIMATION_DURATION,
       });
@@ -55,6 +49,5 @@ export const useMorphAnimation = (isExpanded: boolean) => {
     bubbleRadius,
     translateX,
     translateY,
-    contentOpacity,
   };
 };

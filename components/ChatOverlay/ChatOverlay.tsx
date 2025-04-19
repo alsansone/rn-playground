@@ -24,14 +24,8 @@ const ChatOverlay: React.FC = () => {
 
   const insets = useSafeAreaInsets();
 
-  const {
-    translateX,
-    translateY,
-    bubbleWidth,
-    bubbleHeight,
-    bubbleRadius,
-    contentOpacity,
-  } = useMorphAnimation(isExpanded);
+  const { translateX, translateY, bubbleWidth, bubbleHeight, bubbleRadius } =
+    useMorphAnimation(isExpanded);
 
   const startX = useSharedValue(20);
   const startY = useSharedValue(height - 120);
@@ -66,11 +60,7 @@ const ChatOverlay: React.FC = () => {
     <GestureDetector gesture={isExpanded ? Gesture.Pan() : panGesture}>
       <Animated.View style={[styles.morphContainer, morphStyle]}>
         {isExpanded ? (
-          <ChatWindow
-            contentOpacity={contentOpacity}
-            onPress={toggleSize}
-            onClose={hideOverlay}
-          />
+          <ChatWindow onPress={toggleSize} onClose={hideOverlay} />
         ) : (
           <ChatBubble
             onPress={toggleSize}
