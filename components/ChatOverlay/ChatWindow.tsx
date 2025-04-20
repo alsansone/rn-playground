@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import Animated, {
-  SharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { View } from "react-native";
 import styles from "./styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,16 +9,11 @@ import ChatInput from "./ChatInput";
 import ChatBody, { Message } from "./ChatBody";
 
 type ChatWindowProps = {
-  contentOpacity: SharedValue<number>;
   onPress: () => void;
   onClose: () => void;
 };
 
-const ChatWindow: React.FC<ChatWindowProps> = ({
-  contentOpacity,
-  onPress,
-  onClose,
-}) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
