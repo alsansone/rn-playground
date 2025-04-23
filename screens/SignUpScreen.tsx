@@ -6,6 +6,7 @@ import FormCard from "../components/FormCard";
 import PrimaryButton from "../components/PrimaryButton";
 import EmailInput from "../components/EmailInput";
 import PasswordInput from "../components/PasswordInput";
+import { getPasswordStrength, isValidEmail } from "../utils/validation";
 
 type Props = NativeStackScreenProps<RootStackParamList, "SignUp">;
 
@@ -15,7 +16,10 @@ const SignUpScreen = ({ navigation }: Props) => {
 
   const passwordRef = useRef<TextInput>(null);
 
-  const isFormValid = email.trim() !== "" && password.trim() !== "";
+  const isEmailValid = isValidEmail(email);
+  const passwordStrength = getPasswordStrength(password);
+
+  const isFormValid = isEmailValid && password.length > 0;
 
   return (
     <FormCard>
@@ -26,11 +30,26 @@ const SignUpScreen = ({ navigation }: Props) => {
         returnKeyType="next"
         onSubmitEditing={() => passwordRef.current?.focus()}
       />
+      {!isEmailValid && email.length > 0 && (
+        <Text style={styles.error}>Enter a valid email address</Text>
+      )}
       <PasswordInput
         ref={passwordRef}
         value={password}
         onChangeText={setPassword}
       />
+      {password.length > 0 && (
+        <Text
+          style={[
+            styles.strength,
+            passwordStrength === "Strong" && { color: "green" },
+            passwordStrength === "Moderate" && { color: "orange" },
+            passwordStrength === "Weak" && { color: "crimson" },
+          ]}
+        >
+          Password strength: {passwordStrength}
+        </Text>
+      )}
       <PrimaryButton
         label="Sign Up"
         disabled={!isFormValid}
@@ -64,6 +83,17 @@ const styles = StyleSheet.create({
   linkBold: {
     color: "#1565c0",
     fontWeight: "600",
+  },
+  error: {
+    color: "crimson",
+    marginBottom: 8,
+    marginStart: 4,
+    fontSize: 13,
+  },
+  strength: {
+    fontSize: 13,
+    marginBottom: 16,
+    marginStart: 4,
   },
 });
 
