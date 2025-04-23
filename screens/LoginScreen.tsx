@@ -1,0 +1,64 @@
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import React, { useRef, useState } from "react";
+import { Text, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import { RootStackParamList } from "../navigation/MainNavigator";
+import FormCard from "../components/FormCard";
+import PrimaryButton from "../components/PrimaryButton";
+import PasswordInput from "../components/PasswordInput";
+import EmailInput from "../components/EmailInput";
+
+type Props = NativeStackScreenProps<RootStackParamList, "Login">;
+
+const LoginScreen = ({ navigation }: Props) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const passwordRef = useRef<TextInput>(null);
+
+  return (
+    <FormCard>
+      <Text style={styles.title}>Welcome Back 👋</Text>
+      <EmailInput
+        value={email}
+        onChangeText={setEmail}
+        returnKeyType="next"
+        onSubmitEditing={() => passwordRef.current?.focus()}
+      />
+      <PasswordInput
+        ref={passwordRef}
+        value={password}
+        onChangeText={setPassword}
+      />
+      <PrimaryButton
+        label="Login"
+        onPress={() => console.log("Login", email, password)}
+      />
+      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+        <Text style={styles.link}>
+          Don’t have an account? <Text style={styles.linkBold}>Sign up</Text>
+        </Text>
+      </TouchableOpacity>
+    </FormCard>
+  );
+};
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 26,
+    fontWeight: "700",
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#1565c0",
+  },
+  link: {
+    textAlign: "center",
+    color: "#555",
+    fontSize: 14,
+  },
+  linkBold: {
+    color: "#1565c0",
+    fontWeight: "600",
+  },
+});
+
+export default LoginScreen;
