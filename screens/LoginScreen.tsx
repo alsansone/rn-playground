@@ -15,6 +15,8 @@ const LoginScreen = ({ navigation }: Props) => {
 
   const passwordRef = useRef<TextInput>(null);
 
+  const isFormValid = email.trim() !== "" && password.trim() !== "";
+
   return (
     <FormCard>
       <Text style={styles.title}>Welcome Back 👋</Text>
@@ -31,6 +33,7 @@ const LoginScreen = ({ navigation }: Props) => {
       />
       <PrimaryButton
         label="Login"
+        disabled={!isFormValid}
         onPress={() => console.log("Login", email, password)}
       />
       <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>

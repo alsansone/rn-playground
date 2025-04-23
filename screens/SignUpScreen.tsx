@@ -15,6 +15,8 @@ const SignUpScreen = ({ navigation }: Props) => {
 
   const passwordRef = useRef<TextInput>(null);
 
+  const isFormValid = email.trim() !== "" && password.trim() !== "";
+
   return (
     <FormCard>
       <Text style={styles.title}>Create Your Account</Text>
@@ -31,6 +33,7 @@ const SignUpScreen = ({ navigation }: Props) => {
       />
       <PrimaryButton
         label="Sign Up"
+        disabled={!isFormValid}
         onPress={() => {
           console.log("Sign up", email, password);
           navigation.goBack();
