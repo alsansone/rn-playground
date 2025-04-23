@@ -20,6 +20,7 @@ RN Playground is a React Native project designed to explore and demonstrate vari
 4. Run the app on your desired platform
    - Android: `npm run android`
    - iOS: `npm run ios`
+   - Web: `npm run web`
 
 ## Dependencies
 
