@@ -53,6 +53,10 @@ const LoginScreen = ({ navigation }: Props) => {
     tryAutoFillCredential(setEmail, setPassword);
   }, []);
 
+  const handleLogin = () => {
+    navigation.navigate("Home");
+  };
+
   return (
     <FormCard>
       <Text style={styles.title}>Welcome Back 👋</Text>
@@ -73,7 +77,7 @@ const LoginScreen = ({ navigation }: Props) => {
       <PrimaryButton
         label="Login"
         disabled={!isFormValid}
-        onPress={() => console.log("Login success!")}
+        onPress={handleLogin}
       />
       <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
         <Text style={styles.link}>

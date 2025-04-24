@@ -1,7 +1,8 @@
 import React, { forwardRef, useState } from "react";
 import { View, TouchableOpacity, StyleSheet, TextInput } from "react-native";
 import InputField from "./InputField";
-import { Ionicons } from "@expo/vector-icons";
+import Eye from "../assets/eye.svg";
+import EyeOff from "../assets/eye-off.svg";
 
 type Props = {
   value: string;
@@ -31,7 +32,11 @@ const PasswordInput = forwardRef<TextInput, Props>(
           style={styles.icon}
           onPress={() => setVisible((prev) => !prev)}
         >
-          <Ionicons name={visible ? "eye-off" : "eye"} size={20} color="#888" />
+          {visible ? (
+            <EyeOff width={20} height={20} />
+          ) : (
+            <Eye width={20} height={20} />
+          )}
         </TouchableOpacity>
       </View>
     );
