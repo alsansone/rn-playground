@@ -1,12 +1,18 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useRef, useState } from "react";
-import { Text, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Platform,
+} from "react-native";
 import { RootStackParamList } from "../navigation/MainNavigator";
 import FormCard from "../components/FormCard";
 import PrimaryButton from "../components/PrimaryButton";
 import PasswordInput from "../components/PasswordInput";
 import EmailInput from "../components/EmailInput";
-import { getPasswordStrength, isValidEmail } from "../utils/validation";
+import { isValidEmail } from "../utils/validation";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -17,9 +23,35 @@ const LoginScreen = ({ navigation }: Props) => {
   const passwordRef = useRef<TextInput>(null);
 
   const isEmailValid = isValidEmail(email);
-  const passwordStrength = getPasswordStrength(password);
 
   const isFormValid = isEmailValid && password.length > 0;
+
+  const tryAutoFillCredential = async (
+    setEmail: (v: string) => void,
+    setPassword: (v: string) => void
+  ) => {
+    if (Platform.OS === "web" && "credentials" in navigator) {
+      try {
+        const cred = await navigator.credentials.get({
+          // @ts-ignore
+          password: true,
+          mediation: "optional",
+        });
+
+        if (cred) {
+          setEmail(cred.id);
+          // @ts-ignore
+          setPassword(cred.password);
+        }
+      } catch (err) {
+        console.error("❌ Failed to get credentials:", err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    tryAutoFillCredential(setEmail, setPassword);
+  }, []);
 
   return (
     <FormCard>
@@ -38,22 +70,10 @@ const LoginScreen = ({ navigation }: Props) => {
         value={password}
         onChangeText={setPassword}
       />
-      {password.length > 0 && (
-        <Text
-          style={[
-            styles.strength,
-            passwordStrength === "Strong" && { color: "green" },
-            passwordStrength === "Moderate" && { color: "orange" },
-            passwordStrength === "Weak" && { color: "crimson" },
-          ]}
-        >
-          Password strength: {passwordStrength}
-        </Text>
-      )}
       <PrimaryButton
         label="Login"
         disabled={!isFormValid}
-        onPress={() => console.log("Login", email, password)}
+        onPress={() => console.log("Login success!")}
       />
       <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
         <Text style={styles.link}>

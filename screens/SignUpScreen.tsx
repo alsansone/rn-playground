@@ -1,5 +1,11 @@
 import React, { useRef, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  Platform,
+} from "react-native";
 import { RootStackParamList } from "../navigation/MainNavigator";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import FormCard from "../components/FormCard";
@@ -20,6 +26,21 @@ const SignUpScreen = ({ navigation }: Props) => {
   const passwordStrength = getPasswordStrength(password);
 
   const isFormValid = isEmailValid && password.length > 0;
+
+  const saveCredential = async (email: string, password: string) => {
+    if (Platform.OS === "web" && "credentials" in navigator) {
+      try {
+        // @ts-ignore
+        const cred = new window.PasswordCredential({
+          id: email,
+          password,
+        });
+        await navigator.credentials.store(cred);
+      } catch (err) {
+        console.error("❌ Failed to save credential:", err);
+      }
+    }
+  };
 
   return (
     <FormCard>
@@ -53,8 +74,8 @@ const SignUpScreen = ({ navigation }: Props) => {
       <PrimaryButton
         label="Sign Up"
         disabled={!isFormValid}
-        onPress={() => {
-          console.log("Sign up", email, password);
+        onPress={async () => {
+          await saveCredential(email, password);
           navigation.goBack();
         }}
       />
