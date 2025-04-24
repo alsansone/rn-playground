@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "deploy": "expo export --platform web --public-url /rn-playground/ && npx gh-pages -d dist"
+    "deploy": "expo export --platform web && npx gh-pages -d dist"
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.1",
