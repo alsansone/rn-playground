@@ -37,3 +37,6 @@ yarn-error.*
 
 # Firebase
 .firebase
+
+credentials.json
+assetlinks.json
