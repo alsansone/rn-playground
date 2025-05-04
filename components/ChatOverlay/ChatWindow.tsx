@@ -5,7 +5,11 @@ import styles from "./styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
-import ChatBody, { Message } from "./ChatBody";
+import ChatBody from "./ChatBody";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "../../hooks/hooks";
+import { RootState } from "../../store/store";
+import { sendMessage } from "../../store/messagesSlice";
 
 type ChatWindowProps = {
   onPress: () => void;
@@ -13,21 +17,15 @@ type ChatWindowProps = {
 };
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
+  const dispatch = useAppDispatch();
+  const messages = useSelector((state: RootState) => state.messages.items);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
 
-  const sendMessage = () => {
+  const send = () => {
     if (!message.trim()) return;
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      text: message.trim(),
-      sender: "user",
-      timestamp: Date.now(),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
+    dispatch(sendMessage(message.trim(), "user"));
     setMessage("");
 
     // Show typing indicator
@@ -35,14 +33,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
 
     // Fake bot reply after delay
     setTimeout(() => {
-      const reply: Message = {
-        id: Date.now().toString() + "-bot",
-        text: "I'm a bot 🤖",
-        sender: "bot",
-        timestamp: Date.now(),
-      };
-
-      setMessages((prev) => [...prev, reply]);
+      dispatch(sendMessage("I'm a bot 🤖", "bot"));
       setIsTyping(false);
     }, 1500);
   };
@@ -59,7 +50,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
           <ChatInput
             message={message}
             onChangeMessage={setMessage}
-            onSend={sendMessage}
+            onSend={send}
           />
         </KeyboardAvoidingView>
       </SafeAreaView>
