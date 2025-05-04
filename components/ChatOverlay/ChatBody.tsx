@@ -42,7 +42,6 @@ const ChatBody: React.FC<ChatBodyProps> = ({ messages, isTyping }) => {
         renderItem={renderMessage}
         contentContainerStyle={{ padding: 16 }}
         style={{ flex: 1 }}
-        inverted
       />
       {isTyping && (
         <Text style={{ marginStart: 16, marginBottom: 16, color: "#000" }}>

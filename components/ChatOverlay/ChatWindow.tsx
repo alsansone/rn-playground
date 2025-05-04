@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import Animated from "react-native-reanimated";
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import styles from "./styles";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useKeyboardHeight from "./useKeyboardHeight";
+import { SafeAreaView } from "react-native-safe-area-context";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import ChatBody, { Message } from "./ChatBody";
@@ -18,10 +17,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
 
-  const insets = useSafeAreaInsets();
-
-  const keyboardHeight = useKeyboardHeight();
-
   const sendMessage = () => {
     if (!message.trim()) return;
 
@@ -32,7 +27,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
       timestamp: Date.now(),
     };
 
-    setMessages((prev) => [userMsg, ...prev]);
+    setMessages((prev) => [...prev, userMsg]);
     setMessage("");
 
     // Show typing indicator
@@ -47,23 +42,27 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
         timestamp: Date.now(),
       };
 
-      setMessages((prev) => [reply, ...prev]);
+      setMessages((prev) => [...prev, reply]);
       setIsTyping(false);
     }, 1500);
   };
 
   return (
-    <Animated.View style={[styles.chatContent, { paddingTop: insets.top }]}>
-      <View style={{ flex: 1 }}>
-        <ChatHeader onMinimize={onPress} onClose={onClose} />
-        <ChatBody messages={messages} isTyping={isTyping} />
-        <ChatInput
-          message={message}
-          onChangeMessage={setMessage}
-          onSend={sendMessage}
-          keyboardHeight={keyboardHeight}
-        />
-      </View>
+    <Animated.View style={styles.chatContent}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ChatHeader onMinimize={onPress} onClose={onClose} />
+          <ChatBody messages={messages} isTyping={isTyping} />
+          <ChatInput
+            message={message}
+            onChangeMessage={setMessage}
+            onSend={sendMessage}
+          />
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </Animated.View>
   );
 };

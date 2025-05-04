@@ -8,6 +8,7 @@ export default StyleSheet.create({
   },
   chatContent: {
     flex: 1,
+    backgroundColor: "#fff",
   },
   bubbleTouch: {
     backgroundColor: "#007AFF",
