@@ -1,7 +1,12 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { Text } from "react-native";
 import styles from "./styles";
+import Animated, {
+  LinearTransition,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 
 export type Message = {
   id: string;
@@ -15,40 +20,70 @@ type ChatBodyProps = {
   isTyping: boolean;
 };
 
-const ChatBody: React.FC<ChatBodyProps> = ({ messages, isTyping }) => {
-  const renderMessage = ({ item }: { item: Message }) => (
-    <View
+const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
+  const scale = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: withSpring(scale.value, { damping: 10, stiffness: 100 }) },
+      ],
+      opacity: withSpring(scale.value),
+    };
+  });
+
+  React.useEffect(() => {
+    // Trigger the animation when the component mounts
+    scale.value = 1;
+  }, []);
+
+  return (
+    <Animated.View
       style={[
         styles.messageBubble,
-        item.sender === "user" ? styles.userBubble : styles.botBubble,
+        message.sender === "user" ? styles.userBubble : styles.botBubble,
+        animatedStyle,
       ]}
     >
       <Text
         style={[
           styles.messageText,
-          item.sender === "bot" ? { color: "#000" } : null,
+          message.sender === "bot" ? { color: "#000" } : null,
         ]}
       >
-        {item.text}
+        {message.text}
       </Text>
-    </View>
+    </Animated.View>
   );
+};
 
-  return (
-    <>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={renderMessage}
-        contentContainerStyle={{ padding: 16 }}
-        style={{ flex: 1 }}
-      />
-      {isTyping && (
+const ChatBody: React.FC<ChatBodyProps> = ({ messages, isTyping }) => {
+  const renderMessage = ({ item }: { item: Message }) => {
+    return <MessageBubble message={item} />;
+  };
+
+  const footer = () => {
+    if (isTyping) {
+      return (
         <Text style={{ marginStart: 16, marginBottom: 16, color: "#000" }}>
           Typing...
         </Text>
-      )}
-    </>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <Animated.FlatList
+      data={messages}
+      keyExtractor={(item) => item.id}
+      renderItem={renderMessage}
+      contentContainerStyle={{ padding: 16 }}
+      style={{ flex: 1 }}
+      itemLayoutAnimation={LinearTransition}
+      initialNumToRender={30}
+      ListFooterComponent={footer}
+    />
   );
 };
 
