@@ -13,6 +13,8 @@ import PrimaryButton from "../components/PrimaryButton";
 import PasswordInput from "../components/PasswordInput";
 import EmailInput from "../components/EmailInput";
 import { isValidEmail } from "../utils/validation";
+import { useAppDispatch } from "../hooks/hooks";
+import { login } from "../store/authSlice";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -25,6 +27,8 @@ const LoginScreen = ({ navigation }: Props) => {
   const isEmailValid = isValidEmail(email);
 
   const isFormValid = isEmailValid && password.length > 0;
+
+  const dispatch = useAppDispatch();
 
   const tryAutoFillCredential = async (
     setEmail: (v: string) => void,
@@ -54,6 +58,7 @@ const LoginScreen = ({ navigation }: Props) => {
   }, []);
 
   const handleLogin = () => {
+    dispatch(login({ email, password }));
     navigation.navigate("Home");
   };
 

@@ -1,7 +1,6 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import styles from "./styles";
-import Animated from "react-native-reanimated";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 type ChatBubbleProps = {
@@ -16,7 +15,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   statusText = "Connecting to chat…",
 }) => {
   return (
-    <Animated.View style={[styles.chatMiniContainer]}>
+    <View style={[styles.chatMiniContainer]}>
       <TouchableOpacity onPress={onClose} style={styles.chatMiniTop}>
         <Ionicons name="close" size={28} color="#000" />
       </TouchableOpacity>
@@ -31,7 +30,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
           <Text style={styles.chatMiniText}>{statusText}</Text>
         </View>
       </TouchableOpacity>
-    </Animated.View>
+    </View>
   );
 };
 

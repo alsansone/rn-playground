@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import Animated from "react-native-reanimated";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import styles from "./styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import ChatBody from "./ChatBody";
-import { useSelector } from "react-redux";
-import { useAppDispatch } from "../../hooks/hooks";
-import { RootState } from "../../store/store";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { sendMessage } from "../../store/messagesSlice";
 
 type ChatWindowProps = {
@@ -18,7 +15,7 @@ type ChatWindowProps = {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
   const dispatch = useAppDispatch();
-  const messages = useSelector((state: RootState) => state.messages.items);
+  const messages = useAppSelector((state) => state.messages.items);
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
@@ -39,7 +36,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
   };
 
   return (
-    <Animated.View style={styles.chatContent}>
+    <View style={styles.chatContent}>
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -54,7 +51,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onPress, onClose }) => {
           />
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </Animated.View>
+    </View>
   );
 };
 

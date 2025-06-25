@@ -4,6 +4,14 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   clamp,
+  SlideInLeft,
+  SlideOutRight,
+  SlideInUp,
+  SlideOutDown,
+  SlideInDown,
+  SlideOutUp,
+  StretchOutY,
+  StretchInY,
 } from "react-native-reanimated";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,12 +19,15 @@ import ChatBubble from "../components/ChatOverlay/ChatBubble";
 import ChatWindow from "../components/ChatOverlay/ChatWindow";
 import styles from "../components/ChatOverlay/styles";
 import { useMorphAnimation } from "../components/ChatOverlay/useMorphAnimation";
-import { useChatOverlay } from "../components/ChatOverlay";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+import { toggleOverlay, toggleSize } from "../store/messagesSlice";
 
 const ChatOverlay: React.FC = () => {
   const { width, height } = Dimensions.get("window");
 
-  const { isExpanded, toggleSize, visible, hideOverlay } = useChatOverlay();
+  const showOverlay = useAppSelector((state) => state.messages.showOverlay);
+  const isExpanded = useAppSelector((state) => state.messages.isExpanded);
+  const dispatch = useAppDispatch();
 
   const insets = useSafeAreaInsets();
 
@@ -30,8 +41,8 @@ const ChatOverlay: React.FC = () => {
     .onUpdate((event) => {
       const nextX = event.translationX + startX.value;
       const nextY = event.translationY + startY.value;
-      translateX.value = clamp(nextX, 10, width - 120); // horizontal clamp
-      translateY.value = clamp(nextY, insets.top + 10, height - 200); // vertical clamp, respect status bar
+      translateX.value = clamp(nextX, 10, width - 120);
+      translateY.value = clamp(nextY, insets.top + 10, height - 200);
     })
     .onEnd(() => {
       startX.value = translateX.value;
@@ -48,24 +59,41 @@ const ChatOverlay: React.FC = () => {
     ],
   }));
 
-  if (!visible) {
+  if (!showOverlay) {
     return null;
   }
 
   return (
-    <GestureDetector gesture={isExpanded ? Gesture.Pan() : panGesture}>
-      <Animated.View style={[styles.morphContainer, morphStyle]}>
-        {isExpanded ? (
-          <ChatWindow onPress={toggleSize} onClose={hideOverlay} />
-        ) : (
+    <Animated.View
+      entering={SlideInDown}
+      exiting={SlideOutDown}
+      style={[styles.morphContainer, morphStyle]}
+    >
+      {isExpanded ? (
+        <ChatWindow
+          onPress={() => dispatch(toggleSize())}
+          onClose={() => {
+            dispatch(toggleOverlay());
+            if (!isExpanded) {
+              dispatch(toggleSize());
+            }
+          }}
+        />
+      ) : (
+        <GestureDetector gesture={panGesture}>
           <ChatBubble
-            onPress={toggleSize}
-            onClose={hideOverlay}
+            onPress={() => dispatch(toggleSize())}
+            onClose={() => {
+              dispatch(toggleOverlay());
+              if (!isExpanded) {
+                dispatch(toggleSize());
+              }
+            }}
             statusText="Connecting to chat…"
           />
-        )}
-      </Animated.View>
-    </GestureDetector>
+        </GestureDetector>
+      )}
+    </Animated.View>
   );
 };
 

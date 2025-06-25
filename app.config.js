@@ -4,6 +4,7 @@ export default {
   expo: {
     name: "rn-playground",
     slug: "rn-playground",
+    scheme: "rnplayground",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",

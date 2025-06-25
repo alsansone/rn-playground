@@ -12,6 +12,12 @@ export type RootStackParamList = {
   Settings: undefined;
 };
 
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const MainNavigator = () => (
@@ -26,7 +32,11 @@ const MainNavigator = () => (
       component={SignUpScreen}
       options={{ headerShown: false }}
     />
-    <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{ headerShown: false }}
+    />
     <Stack.Screen name="Settings" component={SettingsScreen} />
   </Stack.Navigator>
 );

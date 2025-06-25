@@ -1,17 +1,17 @@
 import React from "react";
 import { View, Button, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useChatOverlay } from "../components/ChatOverlay";
+import { useAppDispatch } from "../hooks/hooks";
+import { toggleOverlay } from "../store/messagesSlice";
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
-
-  const { showOverlay } = useChatOverlay();
+  const dispatch = useAppDispatch();
 
   return (
     <View style={styles.container}>
       <Button title="Back to Home" onPress={() => navigation.goBack()} />
-      <Button title="Start Chat" onPress={showOverlay} />
+      <Button title="Start Chat" onPress={() => dispatch(toggleOverlay())} />
     </View>
   );
 };

@@ -10,10 +10,14 @@ export interface Message {
 export type MessageSender = "user" | "bot";
 
 interface MessagesState {
+  showOverlay: boolean;
+  isExpanded: boolean;
   items: Message[];
 }
 
 const initialState: MessagesState = {
+  showOverlay: false,
+  isExpanded: true,
   items: [],
 };
 
@@ -21,6 +25,14 @@ const messagesSlice = createSlice({
   name: "messages",
   initialState,
   reducers: {
+    // toggle chat overlay visibility
+    toggleOverlay(state) {
+      state.showOverlay = !state.showOverlay;
+    },
+    // toggle chat window size
+    toggleSize(state) {
+      state.isExpanded = !state.isExpanded;
+    },
     // add a new message
     sendMessage: {
       reducer(state, action: PayloadAction<Message>) {
@@ -52,5 +64,11 @@ const messagesSlice = createSlice({
   },
 });
 
-export const { sendMessage, receiveMessage, clearChat } = messagesSlice.actions;
+export const {
+  toggleOverlay,
+  toggleSize,
+  sendMessage,
+  receiveMessage,
+  clearChat,
+} = messagesSlice.actions;
 export default messagesSlice.reducer;
