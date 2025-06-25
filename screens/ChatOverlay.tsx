@@ -4,14 +4,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   clamp,
-  SlideInLeft,
-  SlideOutRight,
-  SlideInUp,
   SlideOutDown,
   SlideInDown,
-  SlideOutUp,
-  StretchOutY,
-  StretchInY,
 } from "react-native-reanimated";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,7 +14,7 @@ import ChatWindow from "../components/ChatOverlay/ChatWindow";
 import styles from "../components/ChatOverlay/styles";
 import { useMorphAnimation } from "../components/ChatOverlay/useMorphAnimation";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { toggleOverlay, toggleSize } from "../store/messagesSlice";
+import { clearChat, toggleOverlay, toggleSize } from "../store/messagesSlice";
 
 const ChatOverlay: React.FC = () => {
   const { width, height } = Dimensions.get("window");
@@ -59,6 +53,14 @@ const ChatOverlay: React.FC = () => {
     ],
   }));
 
+  const onClose = () => {
+    dispatch(toggleOverlay());
+    if (!isExpanded) {
+      dispatch(toggleSize());
+    }
+    dispatch(clearChat());
+  };
+
   if (!showOverlay) {
     return null;
   }
@@ -70,25 +72,12 @@ const ChatOverlay: React.FC = () => {
       style={[styles.morphContainer, morphStyle]}
     >
       {isExpanded ? (
-        <ChatWindow
-          onPress={() => dispatch(toggleSize())}
-          onClose={() => {
-            dispatch(toggleOverlay());
-            if (!isExpanded) {
-              dispatch(toggleSize());
-            }
-          }}
-        />
+        <ChatWindow onPress={() => dispatch(toggleSize())} onClose={onClose} />
       ) : (
         <GestureDetector gesture={panGesture}>
           <ChatBubble
             onPress={() => dispatch(toggleSize())}
-            onClose={() => {
-              dispatch(toggleOverlay());
-              if (!isExpanded) {
-                dispatch(toggleSize());
-              }
-            }}
+            onClose={onClose}
             statusText="Connecting to chat…"
           />
         </GestureDetector>
